@@ -5,6 +5,7 @@
 [![Build Status](http://img.shields.io/travis/leduong/socketcluster.svg?style=flat)](http://travis-ci.org/leduong/socketcluster)
 [![Coverage Status](https://coveralls.io/repos/leduong/socketcluster/badge.svg?branch=master&service=github)](https://coveralls.io/github/leduong/socketcluster?branch=master)
 [![dependencies Status](https://david-dm.org/leduong/socketcluster/status.svg)](https://david-dm.org/leduong/socketcluster)
+[![devDependencies Status](https://david-dm.org/leduong/socketcluster/dev-status.svg)](https://david-dm.org/leduong/socketcluster?type=dev)
 
 [![NPM](https://nodei.co/npm/socketcluster.png?downloads=true&downloadRank=true&stars=true)](https://nodei.co/npm/socketcluster/)
 
