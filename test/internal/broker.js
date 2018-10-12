@@ -21,9 +21,9 @@ class Broker extends SCBroker {
       var req = http.request({
         socketPath: resultSocketPath,
         method: 'POST'
-      }, (res) => {
-        res.on('data', (data) => {
-          if (data.toString() == 'finish') {
+      }, res => {
+        res.on('data', data => {
+          if (data.toString() === 'finish') {
             clearInterval(testDataInterval);
           }
         });

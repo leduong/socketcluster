@@ -16,14 +16,14 @@ class Worker extends SCWorker {
         In here we handle our incoming WebSocket connections and listen for events.
         From here onwards is just like Socket.io but with some additional features.
     */
-    wsServer.on('connection', (socket) => {
+    wsServer.on('connection', socket => {
       socket.emit('first', 'This is the first event');
 
       socket.on('ping', () => {
         wsServer.exchange.publish('pong', pongData);
       });
 
-      socket.on('login', (username) => {
+      socket.on('login', username => {
         socket.setAuthToken({username: username});
       });
 

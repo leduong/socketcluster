@@ -33,7 +33,6 @@ class Worker extends SCWorker {
       In here we handle our incoming realtime connections and listen for events.
     */
     scServer.on('connection', function (socket) {
-
       // Some sample logic to show how to handle client events,
       // replace this with your own logic
 

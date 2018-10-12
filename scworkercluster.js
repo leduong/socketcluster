@@ -81,37 +81,35 @@ var killUnresponsiveWorkers = function () {
 };
 
 process.on('message', function (masterMessage) {
-  if (masterMessage.type == 'masterMessage' || masterMessage.type == 'masterResponse') {
+  if (masterMessage.type === 'masterMessage' || masterMessage.type === 'masterResponse') {
     var targetWorker = workers[masterMessage.workerId];
     if (targetWorker) {
       targetWorker.send(masterMessage);
-    } else {
-      if (masterMessage.type == 'masterMessage') {
-        var errorMessage = 'Cannot send message to worker with id ' + masterMessage.workerId +
+    } else if (masterMessage.type === 'masterMessage') {
+      var errorMessage = 'Cannot send message to worker with id ' + masterMessage.workerId +
         ' because the worker does not exist';
 
-        var notFoundError = new InvalidActionError(errorMessage);
-        sendErrorToMaster(notFoundError);
+      var notFoundError = new InvalidActionError(errorMessage);
+      sendErrorToMaster(notFoundError);
 
-        if (masterMessage.cid) {
-          process.send({
-            type: 'workerClusterResponse',
-            error: scErrors.dehydrateError(notFoundError, true),
-            data: null,
-            workerId: masterMessage.workerId,
-            rid: masterMessage.cid
-          });
-        }
-      } else {
-        var errorMessage = 'Cannot send response to worker with id ' + masterMessage.workerId +
-        ' because the worker does not exist';
-
-        var notFoundError = new InvalidActionError(errorMessage);
-        sendErrorToMaster(notFoundError);
+      if (masterMessage.cid) {
+        process.send({
+          type: 'workerClusterResponse',
+          error: scErrors.dehydrateError(notFoundError, true),
+          data: null,
+          workerId: masterMessage.workerId,
+          rid: masterMessage.cid
+        });
       }
+    } else {
+      var errorMessage = 'Cannot send response to worker with id ' + masterMessage.workerId +
+        ' because the worker does not exist';
+
+      var notFoundError = new InvalidActionError(errorMessage);
+      sendErrorToMaster(notFoundError);
     }
   } else {
-    if (masterMessage.type == 'terminate') {
+    if (masterMessage.type === 'terminate') {
       if (masterMessage.data.killClusterMaster) {
         terminate(masterMessage.data.immediate);
       } else {
@@ -139,7 +137,7 @@ function SCWorkerCluster(options) {
   options = options || {};
   scWorkerCluster = this;
 
-  if (options.run != null) {
+  if (options.run !== null) {
     this.run = options.run;
   }
 
@@ -151,16 +149,16 @@ SCWorkerCluster.create = function (options) {
 };
 
 SCWorkerCluster.prototype._init = function (options) {
-  if (options.schedulingPolicy != null) {
+  if (options.schedulingPolicy !== null) {
     cluster.schedulingPolicy = options.schedulingPolicy;
   }
-  if (options.processTermTimeout != null) {
+  if (options.processTermTimeout !== null) {
     processTermTimeout = options.processTermTimeout;
   }
-  if (options.forceKillTimeout != null) {
+  if (options.forceKillTimeout !== null) {
     forceKillTimeout = options.forceKillTimeout;
   }
-  if (options.forceKillSignal != null) {
+  if (options.forceKillSignal !== null) {
     forceKillSignal = options.forceKillSignal;
   }
 
@@ -186,7 +184,7 @@ SCWorkerCluster.prototype._init = function (options) {
     worker.on('error', sendErrorToMaster);
 
     worker.on('message', function (workerMessage) {
-      if (workerMessage.type == 'ready') {
+      if (workerMessage.type === 'ready') {
         process.send({
           type: 'workerStart',
           data: {

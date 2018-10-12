@@ -1,4 +1,14 @@
-SocketCluster
+
+[![License](http://img.shields.io/badge/license-MIT-blue.svg?style=flat)](https://npmjs.org/package/socketcluster)
+[![NPM version](http://img.shields.io/npm/v/socketcluster.svg?style=flat)](https://npmjs.org/package/socketcluster)
+[![NPM version](http://img.shields.io/npm/dm/socketcluster.svg?style=flat)](https://npmjs.org/package/socketcluster)
+[![Build Status](http://img.shields.io/travis/leduong/socketcluster.svg?style=flat)](http://travis-ci.org/leduong/socketcluster)
+[![Coverage Status](https://coveralls.io/repos/leduong/socketcluster/badge.svg?branch=master&service=github)](https://coveralls.io/github/leduong/socketcluster?branch=master)
+[![dependencies Status](https://david-dm.org/leduong/socketcluster/status.svg)](https://david-dm.org/leduong/socketcluster)
+
+[![NPM](https://nodei.co/npm/socketcluster.png?downloads=true&downloadRank=true&stars=true)](https://nodei.co/npm/socketcluster/)
+
+SocketCluster-
 ======
 
 [![Join the chat at https://gitter.im/SocketCluster/socketcluster](https://badges.gitter.im/Join%20Chat.svg)](https://gitter.im/SocketCluster/socketcluster?utm_source=badge&utm_medium=badge&utm_campaign=pr-badge&utm_content=badge)

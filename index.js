@@ -48,7 +48,7 @@ function SocketCluster(options) {
   self._shuttingDown = false;
 
   self._errorAnnotations = {
-    'EADDRINUSE': 'Failed to bind to a port because it was already used by another process.'
+    EADDRINUSE: 'Failed to bind to a port because it was already used by another process.'
   };
 
   self.on('error', function (error) {
@@ -168,18 +168,18 @@ SocketCluster.prototype._init = function (options) {
   verifyDuration('processTermTimeout');
   verifyDuration('forceKillTimeout');
 
-  if (self.options.appName == null) {
+  if (self.options.appName === null) {
     self.options.appName = uuid.v4();
   }
 
-  if (self.options.run != null) {
+  if (self.options.run !== null) {
     self.run = self.options.run;
   }
 
-  if (self.options.workerController == null) {
-    throw new InvalidOptionsError("Compulsory option 'workerController' was not specified " +
-      "- It needs to be a path to a JavaScript file which will act as the " +
-      "boot controller for each worker in the cluster");
+  if (self.options.workerController === null) {
+    throw new InvalidOptionsError('Compulsory option \'workerController\' was not specified ' +
+      '- It needs to be a path to a JavaScript file which will act as the ' +
+      'boot controller for each worker in the cluster');
   }
 
   var pathHasher = crypto.createHash('md5');
@@ -188,14 +188,14 @@ SocketCluster.prototype._init = function (options) {
   // Trim it because some OSes (e.g. OSX) do not like long path names for domain sockets.
   var shortAppName = self.options.appName.substr(0, 13);
 
-  if (process.platform == 'win32') {
+  if (process.platform === 'win32') {
     if (self.options.socketRoot) {
       self._socketDirPath = self.options.socketRoot + '_';
     } else {
       self._socketDirPath = '\\\\.\\pipe\\socketcluster_' + shortAppName + '_' + pathHash + '_';
     }
   } else {
-    var socketDir, socketParentDir;
+    var socketDir; var socketParentDir;
     if (self.options.socketRoot) {
       socketDir = self.options.socketRoot.replace(/\/$/, '') + '/';
     } else {
@@ -231,9 +231,8 @@ SocketCluster.prototype._init = function (options) {
         protoOpts.ca = protoOpts.ca.map(function (item) {
           if (item instanceof Buffer) {
             return item.toString();
-          } else {
-            return item;
           }
+          return item;
         });
       } else if (protoOpts.ca instanceof Buffer) {
         protoOpts.ca = protoOpts.ca.toString();
@@ -242,7 +241,7 @@ SocketCluster.prototype._init = function (options) {
     if (protoOpts.pfx instanceof Buffer) {
       protoOpts.pfx = protoOpts.pfx.toString('base64');
     }
-    if (protoOpts.passphrase == null) {
+    if (protoOpts.passphrase === null) {
       if (protoOpts.key) {
         var privKeyEncLine = protoOpts.key.split('\n')[1];
         if (privKeyEncLine && privKeyEncLine.toUpperCase().indexOf('ENCRYPTED') > -1) {
@@ -272,14 +271,14 @@ SocketCluster.prototype._init = function (options) {
   if (!self.options.brokers || self.options.brokers < 1) {
     self.options.brokers = 1;
   }
-  if (typeof self.options.brokers != 'number') {
+  if (typeof self.options.brokers !== 'number') {
     throw new InvalidOptionsError('The brokers option must be a number');
   }
 
   if (!self.options.workers || self.options.workers < 1) {
     self.options.workers = 1;
   }
-  if (typeof self.options.workers != 'number') {
+  if (typeof self.options.workers !== 'number') {
     throw new InvalidOptionsError('The workers option must be a number');
   }
 
@@ -307,23 +306,23 @@ SocketCluster.prototype._init = function (options) {
   /*
     To allow inserting blank lines in console on Windows to aid with debugging.
   */
-  if (process.platform == 'win32') {
+  if (process.platform === 'win32') {
     process.stdin.resume();
     process.stdin.setEncoding('utf8');
   }
 
-  if (self.options.secretKey == null) {
+  if (self.options.secretKey === null) {
     self.options.secretKey = crypto.randomBytes(32).toString('hex');
   }
-  if (self.options.authKey == null && self.options.authPrivateKey == null && self.options.authPublicKey == null) {
+  if (self.options.authKey === null && self.options.authPrivateKey === null && self.options.authPublicKey === null) {
     self.options.authKey = crypto.randomBytes(32).toString('hex');
   }
-  if (self.options.instanceId == null) {
+  if (self.options.instanceId === null) {
     self.options.instanceId = uuid.v4();
   }
 
-  if (self.options.downgradeToUser && process.platform != 'win32') {
-    if (typeof self.options.downgradeToUser == 'number') {
+  if (self.options.downgradeToUser && process.platform !== 'win32') {
+    if (typeof self.options.downgradeToUser === 'number') {
       fs.chownSync(self._socketDirPath, self.options.downgradeToUser, 0);
       self._start();
     } else {
@@ -394,7 +393,7 @@ SocketCluster.prototype._getBrokerSocketPaths = function () {
 };
 
 SocketCluster.prototype._capitaliseFirstLetter = function (str) {
-  if (str == null) {
+  if (str === null) {
     str = '';
   }
   return str.charAt(0).toUpperCase() + str.slice(1);
@@ -413,7 +412,7 @@ SocketCluster.prototype._logObject = function (obj, objType, time) {
   var output = obj.stack || obj.message || obj;
 
   var logMessage;
-  if (obj.origin.pid == null) {
+  if (obj.origin.pid === null) {
     logMessage = 'Origin: ' + this._capitaliseFirstLetter(obj.origin.type) + '\n' +
       '   [' + objType + '] ' + output;
   } else {
@@ -425,7 +424,7 @@ SocketCluster.prototype._logObject = function (obj, objType, time) {
 
 SocketCluster.prototype._convertValueToUnknownError = function (err, origin) {
   if (!(err instanceof Error)) {
-    if (err && typeof err == 'object') {
+    if (err && typeof err === 'object') {
       if (err.message || err.stack) {
         err = scErrors.hydrateError(err, true);
       } else {
@@ -443,10 +442,10 @@ SocketCluster.prototype._convertValueToUnknownError = function (err, origin) {
         }
         err = new UnknownError(errorMessage);
       }
-    } else if (typeof err == 'function') {
+    } else if (typeof err === 'function') {
       var errorMessage = '[function ' + (err.name || 'anonymous') + ']';
       err = new UnknownError(errorMessage);
-    } else if (typeof err == 'undefined') {
+    } else if (typeof err === 'undefined') {
       err = new UnknownError('undefined');
     } else if (err === null) {
       err = new UnknownError('null');
@@ -531,7 +530,7 @@ SocketCluster.prototype._workerClusterReadyHandler = function () {
       this._sigusr2SignalHandler = function () {
         var warningMessage;
         var killOptions = {};
-        if (self.options.environment == 'dev') {
+        if (self.options.environment === 'dev') {
           warningMessage = 'Master received SIGUSR2 signal - Shutting down all workers immediately';
           killOptions.immediate = true;
         } else {
@@ -605,14 +604,14 @@ SocketCluster.prototype._handleWorkerClusterExit = function (errorCode, signal) 
   this.emit(this.EVENT_WORKER_CLUSTER_EXIT, workerClusterInfo);
 
   var message = 'WorkerCluster exited with code ' + errorCode;
-  if (signal != null) {
+  if (signal !== null) {
     message += ' and signal ' + signal;
   }
-  if (errorCode == 0) {
+  if (errorCode === 0) {
     this.log(message);
   } else {
     var error = new ProcessExitError(message, errorCode);
-    if (signal != null) {
+    if (signal !== null) {
       error.signal = signal;
     }
     this.emitFail(error, {
@@ -631,7 +630,7 @@ SocketCluster.prototype._handleWorkerClusterExit = function (errorCode, signal) 
 SocketCluster.prototype._launchWorkerCluster = function () {
   var self = this;
 
-  var debugPort, inspectPort;
+  var debugPort; var inspectPort;
 
   var debugRegex = /^--debug(=[0-9]*)?$/;
   var debugBrkRegex = /^--debug-brk(=[0-9]*)?$/;
@@ -647,7 +646,7 @@ SocketCluster.prototype._launchWorkerCluster = function () {
   };
 
   if (argv['debug-workers']) {
-    if (argv['debug-workers'] == true) {
+    if (argv['debug-workers'] === true) {
       debugPort = this.options.defaultWorkerDebugPort;
     } else {
       debugPort = argv['debug-workers'];
@@ -656,7 +655,7 @@ SocketCluster.prototype._launchWorkerCluster = function () {
   }
 
   if (argv['inspect-workers']) {
-    if (argv['inspect-workers'] == true) {
+    if (argv['inspect-workers'] === true) {
       inspectPort = this.options.defaultWorkerDebugPort;
     } else {
       inspectPort = argv['inspect-workers'];
@@ -682,10 +681,10 @@ SocketCluster.prototype._launchWorkerCluster = function () {
   workerOpts.authSignAsync = this.options.authSignAsync;
   workerOpts.authVerifyAsync = this.options.authVerifyAsync;
 
-  if (typeof workerOpts.schedulingPolicy == 'string') {
-    if (workerOpts.schedulingPolicy == 'rr') {
+  if (typeof workerOpts.schedulingPolicy === 'string') {
+    if (workerOpts.schedulingPolicy === 'rr') {
       workerOpts.schedulingPolicy = cluster.SCHED_RR;
-    } else if (workerOpts.schedulingPolicy == 'none') {
+    } else if (workerOpts.schedulingPolicy === 'none') {
       workerOpts.schedulingPolicy = cluster.SCHED_NONE;
     }
   }
@@ -704,28 +703,28 @@ SocketCluster.prototype._launchWorkerCluster = function () {
   });
 
   this.workerCluster.on('message', function workerHandler(m) {
-    if (m.type == 'error') {
+    if (m.type === 'error') {
       if (m.data.workerPid) {
         self._workerErrorHandler(m.data.workerPid, m.data.error);
       } else {
         self._workerClusterErrorHandler(m.data.pid, m.data.error);
       }
-    } else if (m.type == 'warning') {
+    } else if (m.type === 'warning') {
       var warning = scErrors.hydrateError(m.data.error, true);
       self._workerWarningHandler(m.data.workerPid, warning);
-    } else if (m.type == 'ready') {
+    } else if (m.type === 'ready') {
       self._workerClusterReadyHandler();
-    } else if (m.type == 'workerStart') {
+    } else if (m.type === 'workerStart') {
       self._workerStartHandler(m.data);
-    } else if (m.type == 'workerExit') {
+    } else if (m.type === 'workerExit') {
       self._workerExitHandler(m.data);
-    } else if (m.type == 'workerMessage') {
+    } else if (m.type === 'workerMessage') {
       self.emit('workerMessage', m.workerId, m.data, function (err, data) {
         if (m.cid) {
           self.respondToWorker(err, data, m.workerId, m.cid);
         }
       });
-    } else if (m.type == 'workerResponse' || m.type == 'workerClusterResponse') {
+    } else if (m.type === 'workerResponse' || m.type === 'workerClusterResponse') {
       var responseHandler = self._pendingResponseHandlers[m.rid];
       if (responseHandler) {
         clearTimeout(responseHandler.timeout);
@@ -787,12 +786,12 @@ SocketCluster.prototype._start = function () {
   };
 
   var brokerDebugPort = argv['debug-brokers'];
-  if (brokerDebugPort == true) {
+  if (brokerDebugPort === true) {
     brokerDebugPort = self.options.defaultBrokerDebugPort;
   }
 
   var brokerInspectPort = argv['inspect-brokers'];
-  if (brokerInspectPort == true) {
+  if (brokerInspectPort === true) {
     brokerInspectPort = self.options.defaultBrokerDebugPort;
   }
 
@@ -910,7 +909,7 @@ SocketCluster.prototype.killBrokers = function () {
 };
 
 SocketCluster.prototype.log = function (message, time) {
-  if (time == null) {
+  if (time === null) {
     time = Date.now();
   }
   console.log(time + ' - ' + message);
@@ -929,7 +928,7 @@ SocketCluster.prototype._cloneObject = function (object) {
 SocketCluster.prototype.colorText = function (message, color) {
   if (this._colorCodes[color]) {
     return '\x1b[0;' + this._colorCodes[color] + 'm' + message + '\x1b[0m';
-  } else if (color) {
+  } if (color) {
     return '\x1b[' + color + 'm' + message + '\x1b[0m';
   }
   return message;
@@ -977,30 +976,30 @@ SocketCluster.prototype.destroy = function (callback) {
       self.on(self.EVENT_BROKER_EXIT, handleBrokerExit);
     })
   ])
-  .then(function () {
-    return new Promise(function (resolve) {
-      setTimeout(function () {
-        resolve();
-      }, 0);
+    .then(function () {
+      return new Promise(function (resolve) {
+        setTimeout(function () {
+          resolve();
+        }, 0);
+      });
+    })
+    .then(function () {
+      socketClusterSingleton = null;
+      self.removeAllListeners();
+      if (self._stdinErrorHandler) {
+        process.stdin.removeListener('error', self._stdinErrorHandler);
+      }
+      if (self._sigusr2SignalHandler) {
+        process.removeListener('SIGUSR2', self._sigusr2SignalHandler);
+      }
+      self._destroyCallbacks.forEach(function (callback) {
+        callback();
+      });
+      self._destroyCallbacks = [];
+    })
+    .catch(function (error) {
+      self.emit('error', error);
     });
-  })
-  .then(function () {
-    socketClusterSingleton = null;
-    self.removeAllListeners();
-    if (self._stdinErrorHandler) {
-      process.stdin.removeListener('error', self._stdinErrorHandler);
-    }
-    if (self._sigusr2SignalHandler) {
-      process.removeListener('SIGUSR2', self._sigusr2SignalHandler);
-    }
-    self._destroyCallbacks.forEach(function (callback) {
-      callback();
-    });
-    self._destroyCallbacks = [];
-  })
-  .catch(function (error) {
-    self.emit('error', error);
-  });
 
   if (this.workerCluster) {
     this.killWorkers({killClusterMaster: true});

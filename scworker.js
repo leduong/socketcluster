@@ -74,10 +74,10 @@ function SCWorker(options) {
   this.isTerminating = false;
   this._pendingResponseHandlers = {};
 
-  if (options.run != null) {
+  if (options.run !== null) {
     this.run = options.run;
   }
-  if (options.createHTTPServer != null) {
+  if (options.createHTTPServer !== null) {
     this.createHTTPServer = options.createHTTPServer;
   }
 
@@ -141,7 +141,7 @@ SCWorker.prototype._init = function (options) {
   });
 
   this.id = this.options.id;
-  this.isLeader = this.id == 0;
+  this.isLeader = this.id === 0;
 
   this._middleware = {};
   this._middleware[this.MIDDLEWARE_START] = [];
@@ -174,7 +174,7 @@ SCWorker.prototype._init = function (options) {
 
   this.brokerEngineClient.on('error', function (err) {
     var error;
-    if (typeof err == 'string') {
+    if (typeof err === 'string') {
       error = new BrokerError(err);
     } else {
       error = err;
@@ -188,102 +188,102 @@ SCWorker.prototype._init = function (options) {
 
   var createHTTPServerResult = this.createHTTPServer();
   Promise.resolve(createHTTPServerResult)
-  .then(function (httpServer) {
-    self.httpServer = httpServer;
-    self.httpServer.on('request', self._httpRequestHandler.bind(self));
-    self.httpServer.on('upgrade', self._httpRequestHandler.bind(self));
+    .then(function (httpServer) {
+      self.httpServer = httpServer;
+      self.httpServer.on('request', self._httpRequestHandler.bind(self));
+      self.httpServer.on('upgrade', self._httpRequestHandler.bind(self));
 
-    self.httpServer.exchange = self.exchange;
+      self.httpServer.exchange = self.exchange;
 
-    self.httpServer.on('error', function (err) {
-      var error;
-      if (typeof err == 'string') {
-        error = new HTTPServerError(err);
-      } else {
-        error = err;
+      self.httpServer.on('error', function (err) {
+        var error;
+        if (typeof err === 'string') {
+          error = new HTTPServerError(err);
+        } else {
+          error = err;
+        }
+        self.emitError(error);
+      });
+
+      var secure = self.options.protocol === 'https' ? 1 : 0;
+
+      self.scServer = socketClusterServer.attach(self.httpServer, {
+        brokerEngine: self.brokerEngineClient,
+        wsEngine: self._paths.wsEnginePath,
+        allowClientPublish: self.options.allowClientPublish,
+        handshakeTimeout: self.options.handshakeTimeout,
+        ackTimeout: self.options.ackTimeout,
+        pingTimeout: self.options.pingTimeout,
+        pingInterval: self.options.pingInterval,
+        pingTimeoutDisabled: self.options.pingTimeoutDisabled,
+        origins: self.options.origins,
+        appName: self.options.appName,
+        path: self.options.path,
+        authKey: self.options.authKey,
+        authPrivateKey: self.options.authPrivateKey,
+        authPublicKey: self.options.authPublicKey,
+        authAlgorithm: self.options.authAlgorithm,
+        authVerifyAlgorithms: self.options.authVerifyAlgorithms,
+        authSignAsync: self.options.authSignAsync,
+        authVerifyAsync: self.options.authVerifyAsync,
+        authDefaultExpiry: self.options.authDefaultExpiry,
+        middlewareEmitWarnings: self.options.middlewareEmitWarnings,
+        socketChannelLimit: self.options.socketChannelLimit,
+        pubSubBatchDuration: self.options.pubSubBatchDuration,
+        perMessageDeflate: self.options.perMessageDeflate,
+        maxPayload: self.options.maxPayload,
+        wsEngineServerOptions: self.options.wsEngineServerOptions
+      });
+
+      if (self.brokerEngineClient.setSCServer) {
+        self.brokerEngineClient.setSCServer(self.scServer);
       }
-      self.emitError(error);
-    });
 
-    var secure = self.options.protocol == 'https' ? 1 : 0;
-
-    self.scServer = socketClusterServer.attach(self.httpServer, {
-      brokerEngine: self.brokerEngineClient,
-      wsEngine: self._paths.wsEnginePath,
-      allowClientPublish: self.options.allowClientPublish,
-      handshakeTimeout: self.options.handshakeTimeout,
-      ackTimeout: self.options.ackTimeout,
-      pingTimeout: self.options.pingTimeout,
-      pingInterval: self.options.pingInterval,
-      pingTimeoutDisabled: self.options.pingTimeoutDisabled,
-      origins: self.options.origins,
-      appName: self.options.appName,
-      path: self.options.path,
-      authKey: self.options.authKey,
-      authPrivateKey: self.options.authPrivateKey,
-      authPublicKey: self.options.authPublicKey,
-      authAlgorithm: self.options.authAlgorithm,
-      authVerifyAlgorithms: self.options.authVerifyAlgorithms,
-      authSignAsync: self.options.authSignAsync,
-      authVerifyAsync: self.options.authVerifyAsync,
-      authDefaultExpiry: self.options.authDefaultExpiry,
-      middlewareEmitWarnings: self.options.middlewareEmitWarnings,
-      socketChannelLimit: self.options.socketChannelLimit,
-      pubSubBatchDuration: self.options.pubSubBatchDuration,
-      perMessageDeflate: self.options.perMessageDeflate,
-      maxPayload: self.options.maxPayload,
-      wsEngineServerOptions: self.options.wsEngineServerOptions
-    });
-
-    if (self.brokerEngineClient.setSCServer) {
-      self.brokerEngineClient.setSCServer(self.scServer);
-    }
-
-    if (options.authEngine) {
-      self.setAuthEngine(options.authEngine);
-    } else {
+      if (options.authEngine) {
+        self.setAuthEngine(options.authEngine);
+      } else {
       // Default authentication engine
-      self.setAuthEngine(new AuthEngine());
-    }
-    if (options.codecEngine) {
-      self.setCodecEngine(options.codecEngine);
-    } else {
-      self.codec = self.scServer.codec;
-    }
+        self.setAuthEngine(new AuthEngine());
+      }
+      if (options.codecEngine) {
+        self.setCodecEngine(options.codecEngine);
+      } else {
+        self.codec = self.scServer.codec;
+      }
 
-    self._socketPath = self.scServer.getPath();
+      self._socketPath = self.scServer.getPath();
 
-    self.scServer.on('_connection', function (socket) {
+      self.scServer.on('_connection', function (socket) {
       // The connection event counts as a WS request
-      self._wsRequestCount++;
-      socket.on('message', function () {
         self._wsRequestCount++;
+        socket.on('message', function () {
+          self._wsRequestCount++;
+        });
+        self.emit(self.EVENT_CONNECTION, socket);
       });
-      self.emit(self.EVENT_CONNECTION, socket);
-    });
 
-    self.scServer.on('warning', function (warning) {
-      self.emitWarning(warning);
-    });
-    self.scServer.on('error', function (error) {
+      self.scServer.on('warning', function (warning) {
+        self.emitWarning(warning);
+      });
+      self.scServer.on('error', function (error) {
+        self.emitError(error);
+      });
+      if (self.scServer.isReady) {
+        self.emit(self.EVENT_READY);
+      } else {
+        self.scServer.once('ready', function () {
+          self.emit(self.EVENT_READY);
+        });
+      }
+    })
+    .catch(function (error) {
       self.emitError(error);
     });
-    if (self.scServer.isReady) {
-      self.emit(self.EVENT_READY);
-    } else {
-      self.scServer.once('ready', function () {
-        self.emit(self.EVENT_READY);
-      });
-    }
-  })
-  .catch(function (error) {
-    self.emitError(error);
-  });
 };
 
 SCWorker.prototype.createHTTPServer = function () {
   var httpServer;
-  if (this.options.protocol == 'https') {
+  if (this.options.protocol === 'https') {
     httpServer = https.createServer(this.options.protocolOptions);
   } else {
     httpServer = http.createServer();
@@ -315,7 +315,7 @@ SCWorker.prototype.removeMiddleware = function (type, middleware) {
   var middlewareFunctions = this._middleware[type];
 
   this._middleware[type] = middlewareFunctions.filter(function (fn) {
-    return fn != middleware;
+    return fn !== middleware;
   });
 };
 
@@ -325,9 +325,9 @@ SCWorker.prototype.startHTTPServer = function () {
   var options = this.options;
 
   var start = function () {
-    if (options.tcpSynBacklog != null) {
+    if (options.tcpSynBacklog !== null) {
       self.httpServer.listen(options.sourcePort, options.host, options.tcpSynBacklog);
-    } else if (options.host != null) {
+    } else if (options.host !== null) {
       self.httpServer.listen(options.sourcePort, options.host);
     } else {
       self.httpServer.listen(options.sourcePort);
@@ -363,7 +363,7 @@ SCWorker.prototype.start = function () {
   this._httpRPM = 0;
   this._wsRPM = 0;
 
-  if (this._statusInterval != null) {
+  if (this._statusInterval !== null) {
     clearInterval(this._statusInterval);
   }
   this._statusInterval = setInterval(this._calculateStatus.bind(this), this.options.workerStatusInterval);
@@ -371,7 +371,7 @@ SCWorker.prototype.start = function () {
   var runResult = this.run();
 
   return Promise.resolve(runResult)
-  .then(this.startHTTPServer.bind(this));
+    .then(this.startHTTPServer.bind(this));
 };
 
 SCWorker.prototype._httpRequestHandler = function (req, res) {
@@ -420,7 +420,7 @@ SCWorker.prototype._calculateStatus = function () {
 
   var memThreshold = this.options.killWorkerMemoryThreshold;
 
-  if (memThreshold != null) {
+  if (memThreshold !== null) {
     var memoryUsage = process.memoryUsage();
     if (memoryUsage.heapUsed > memThreshold) {
       var message = 'Worker killed itself because its memory ';
@@ -498,7 +498,7 @@ SCWorker.prototype.handleMasterEvent = function () {
 };
 
 SCWorker.prototype.handleMasterMessage = function (message) {
-  var self = this
+  var self = this;
 
   self.emit('masterMessage', message.data, function (err, data) {
     if (message.cid) {
@@ -516,7 +516,7 @@ SCWorker.prototype.emitWarning = function (warning) {
 };
 
 var handleWorkerClusterMessage = function (wcMessage) {
-  if (wcMessage.type == 'terminate') {
+  if (wcMessage.type === 'terminate') {
     if (scWorker && !wcMessage.data.immediate) {
       if (!scWorker.isTerminating) {
         scWorker.isTerminating = true;
@@ -534,15 +534,15 @@ var handleWorkerClusterMessage = function (wcMessage) {
     if (!scWorker) {
       throw new InvalidActionError(`Attempted to send '${wcMessage.type}' to worker ${workerInitOptions.id} before it was instantiated`);
     }
-    if (wcMessage.type == 'emit') {
+    if (wcMessage.type === 'emit') {
       if (wcMessage.data) {
         scWorker.handleMasterEvent(wcMessage.event, wcMessage.data);
       } else {
         scWorker.handleMasterEvent(wcMessage.event);
       }
-    } else if (wcMessage.type == 'masterMessage') {
+    } else if (wcMessage.type === 'masterMessage') {
       scWorker.handleMasterMessage(wcMessage);
-    } else if (wcMessage.type == 'masterResponse') {
+    } else if (wcMessage.type === 'masterResponse') {
       scWorker.handleMasterResponse(wcMessage);
     }
   }

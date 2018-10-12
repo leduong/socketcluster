@@ -42,7 +42,7 @@ var options = {
   clusterStateServerConnectTimeout: Number(process.env.SCC_STATE_SERVER_CONNECT_TIMEOUT) || null,
   clusterStateServerAckTimeout: Number(process.env.SCC_STATE_SERVER_ACK_TIMEOUT) || null,
   clusterStateServerReconnectRandomness: Number(process.env.SCC_STATE_SERVER_RECONNECT_RANDOMNESS) || null,
-  crashWorkerOnError: argv['auto-reboot'] != false,
+  crashWorkerOnError: argv['auto-reboot'] !== false,
   // If using nodemon, set this to true, and make sure that environment is 'dev'.
   killMasterOnSignal: false,
   environment: environment
@@ -84,9 +84,9 @@ var bootCheckInterval = Number(process.env.SOCKETCLUSTER_BOOT_CHECK_INTERVAL) ||
 var bootStartTime = Date.now();
 
 // Detect when Docker volumes are ready.
-var startWhenFileIsReady = (filePath) => {
+var startWhenFileIsReady = filePath => {
   var errorMessage = `Failed to locate a controller file at path ${filePath} ` +
-  `before SOCKETCLUSTER_CONTROLLER_BOOT_TIMEOUT`;
+  'before SOCKETCLUSTER_CONTROLLER_BOOT_TIMEOUT';
 
   return waitForFile(filePath, bootCheckInterval, bootStartTime, bootTimeout, errorMessage);
 };
@@ -97,10 +97,10 @@ var filesReadyPromises = [
   startWhenFileIsReady(workerClusterControllerPath)
 ];
 Promise.all(filesReadyPromises)
-.then(() => {
-  start();
-})
-.catch((err) => {
-  console.error(err.stack);
-  process.exit(1);
-});
+  .then(() => {
+    start();
+  })
+  .catch(err => {
+    console.error(err.stack);
+    process.exit(1);
+  });

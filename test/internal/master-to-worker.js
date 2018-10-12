@@ -19,7 +19,6 @@ socketCluster.on('workerMessage', function (workerId, data, respond) {
     err.name = 'MasterFailureError';
     respond(err);
   } else if (!data.doNothing) {
-
     respond(null, {
       qwerty: 123456
     });
